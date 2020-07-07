@@ -50,7 +50,7 @@ class ChatServer:
                 thread = threading.Thread(target=self.receive_messages, args=(so,))
                 thread.start()
             except KeyboardInterrupt:
-                print("Thanks for using Vignesh's chat server. Bye..")
+                print("Thanks for using my chat server. Bye..")
                 exit(0)
 
 

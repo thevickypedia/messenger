@@ -113,7 +113,7 @@ class ChatBox:
         if messagebox.askokcancel("Message from Chat Box", "Are you sue you want to leave?"):
             self.core.destroy()
             self.user_socket.close()
-            os._exit(0)
+            os._exit(0)  # using os to avoid OSError
 
 
 if __name__ == '__main__':
