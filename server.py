@@ -41,11 +41,15 @@ class ChatServer:
 
     def threaded_message(self):
         while True:
-            client = so, (ip, port) = self.socket_fd.accept()
-            self.receiver_list(client)
-            print(f'Connection accepted from {ip}:{str(port)}')
-            thread = threading.Thread(target=self.receive_messages, args=(so,))
-            thread.start()
+            try:
+                client = so, (ip, port) = self.socket_fd.accept()
+                self.receiver_list(client)
+                print(f'Connection accepted from {ip}:{str(port)}')
+                thread = threading.Thread(target=self.receive_messages, args=(so,))
+                thread.start()
+            except KeyboardInterrupt:
+                print("Thanks for using Vignesh's chat server. Bye..")
+                exit(0)
 
 
 if __name__ == "__main__":
