@@ -66,7 +66,7 @@ class ChatBox:
         self.transcript_box = Text(frame, width=60, height=10, font=("Serif", 12))
         scrollbar = Scrollbar(frame, command=self.transcript_box.yview, orient=VERTICAL)
         self.transcript_box.config(yscrollcommand=scrollbar.set)
-        self.transcript_box.bind('<KeyPress>', lambda e: 'something')
+        self.transcript_box.bind('<KeyPress>', lambda e: 'random')
         self.transcript_box.pack(side='left', padx=10)
         scrollbar.pack(side='right', fill='y')
         frame.pack(side='top')
@@ -76,7 +76,7 @@ class ChatBox:
         Label(frame, text='Message:', font=("Times", 12)).pack(side='top', anchor='w')
         self.text_box = Text(frame, width=60, height=3, font=("Serif", 12))
         self.text_box.pack(side='left', pady=15)
-        self.text_box.bind()
+        self.text_box.bind('<Return>', self.enter_response)
         frame.pack(side='top')
 
     def join_response(self):
@@ -87,6 +87,13 @@ class ChatBox:
         self.name_box.config(state='disabled')
         self.user_socket.send(("joined:" + self.name_box.get()).encode('utf-8'))
 
+    def enter_response(self, event):
+        if len(self.name_box.get()) == 0:
+            messagebox.showerror(
+                "Enter your name!", "Enter your name to send a message!")
+            return
+        self.send_chat()
+
     def send_chat(self):
         sender = self.name_box.get().strip() + ": "
         data = self.text_box.get(1.0, 'end').strip()
@@ -95,7 +102,7 @@ class ChatBox:
         self.transcript_box.yview(END)
         self.user_socket.send(message)
         self.text_box.delete(1.0, 'end')
-        return 'something'
+        return 'random'
 
     def close_response(self):
         if messagebox.askokcancel("Message from Chat Box", "Are you sue you want to leave?"):
