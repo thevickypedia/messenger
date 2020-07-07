@@ -27,7 +27,9 @@ class ChatServer:
     def receive_messages(self, so):
         while True:
             message_buff = so.recv(256)
-            if not message_buff:
+            # empty messages will not be delivered to the receiver
+            msg_checker = (message_buff.decode("utf-8")).split(':')[-1]
+            if not message_buff or len(msg_checker) < 2:
                 break
             self.latest_msg = message_buff.decode('utf-8')
             self.show_to_audience(so)  # send to all clients
