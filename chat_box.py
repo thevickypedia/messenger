@@ -93,6 +93,10 @@ class ChatBox:
                 "Enter your name!", "Enter your name to send a message!")
             return
         self.send_chat()
+        self.remove_text()
+
+    def remove_text(self):
+        self.text_box.delete(1.0, 'end')
 
     def send_chat(self):
         sender = self.name_box.get().strip() + ": "
