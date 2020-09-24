@@ -26,13 +26,17 @@ class ChatServer:
 
     def receive_messages(self, so):
         while True:
-            message_buff = so.recv(256)
-            # empty messages will not be delivered to the receiver
-            msg_checker = (message_buff.decode("utf-8")).split(':')[-1]
-            if not message_buff or len(msg_checker) < 2:
-                break
-            self.latest_msg = message_buff.decode('utf-8')
-            self.show_to_audience(so)  # send to all clients
+            try:
+                message_buff = so.recv(256)
+                # empty messages will not be delivered to the receiver
+                msg_checker = (message_buff.decode("utf-8")).split(':')[-1]
+                if not message_buff or len(msg_checker) < 2:
+                    break
+                self.latest_msg = message_buff.decode('utf-8')
+                self.show_to_audience(so)  # send to all clients
+            except (KeyboardInterrupt, ConnectionResetError):
+                print("Thanks for using my chat server. Bye..")
+                exit(0)
         so.close()
 
     def show_to_audience(self, senders_socket):
