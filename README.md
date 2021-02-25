@@ -1,6 +1,6 @@
 # Messenger on LocalHost
 
-Chat box on local host using socket programming in python
+Chat box on localhost using socket programming in python
 
 ### Setup:
 

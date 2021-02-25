@@ -1,8 +1,7 @@
-from tkinter import *
-import socket
 import os
-import threading
-from tkinter import messagebox
+import socket
+from threading import Thread
+from tkinter import Tk, END, Frame, Text, Scrollbar, Label, Entry, Button, VERTICAL, messagebox
 
 
 class ChatBox:
@@ -33,8 +32,7 @@ class ChatBox:
         self.chat_area()
 
     def message_listener(self):
-        thread = threading.Thread(target=self.msg_from_server, args=(self.user_socket,))
-        thread.start()
+        Thread(target=self.msg_from_server, args=([self.user_socket])).start()
 
     def msg_from_server(self, so):
         while True:
@@ -106,13 +104,14 @@ class ChatBox:
         self.transcript_box.insert('end', message.decode('utf-8') + '\n')
         self.transcript_box.yview(END)
         self.user_socket.send(message)
-        self.text_box.delete(1.0, 'end')
+        self.remove_text()
         return 'random'
 
     def close_response(self):
         if messagebox.askokcancel("Message from Chat Box", "Are you sue you want to leave?"):
             self.core.destroy()
             self.user_socket.close()
+            # noinspection PyProtectedMember,PyUnresolvedReferences
             os._exit(0)  # using os to avoid OSError
 
 

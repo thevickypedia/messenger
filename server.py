@@ -1,5 +1,5 @@
 import socket
-import threading
+from threading import Thread
 
 
 class ChatServer:
@@ -41,7 +41,7 @@ class ChatServer:
 
     def show_to_audience(self, senders_socket):
         for client in self.audience_list:
-            so, (ip, port) = client
+            so, _ = client
             if so is not senders_socket:
                 so.sendall(self.latest_msg.encode('utf-8'))
 
@@ -50,9 +50,8 @@ class ChatServer:
             try:
                 client = so, (ip, port) = self.socket_fd.accept()
                 self.receiver_list(client)
-                print(f'Connection accepted from {ip}:{str(port)}')
-                thread = threading.Thread(target=self.receive_messages, args=(so,))
-                thread.start()
+                print(f'Connection accepted from {ip}:{port}')
+                Thread(target=self.receive_messages, args=([so])).start()
             except KeyboardInterrupt:
                 print("Thanks for using my chat server. Bye..")
                 exit(0)
