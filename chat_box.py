@@ -1,6 +1,7 @@
 import os
-import socket
+from socket import socket, AF_INET, SOCK_STREAM, gethostbyname
 from threading import Thread
+from time import sleep
 from tkinter import Tk, END, Frame, Text, Scrollbar, Label, Entry, Button, VERTICAL, messagebox
 
 
@@ -19,10 +20,8 @@ class ChatBox:
         self.message_listener()
 
     def socket_init(self):
-        self.user_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        user_ip = '127.0.0.1'
-        user_port = 10000
-        self.user_socket.connect((user_ip, user_port))
+        self.user_socket = socket(AF_INET, SOCK_STREAM)
+        self.user_socket.connect((gethostbyname('localhost'), 10000))
 
     def chatbox_init(self):
         self.core.title("Socket Chat")
@@ -116,7 +115,11 @@ class ChatBox:
 
 
 if __name__ == '__main__':
+    sleep(3)
     trigger = Tk()
-    chat_win = ChatBox(trigger)
-    trigger.protocol("WM_DELETE_WINDOW", chat_win.close_response)
-    trigger.mainloop()
+    try:
+        chat_win = ChatBox(trigger)
+        trigger.protocol("WM_DELETE_WINDOW", chat_win.close_response)
+        trigger.mainloop()
+    except ConnectionRefusedError:
+        print('Port 10000 is not actively listening. Please check and enable the server/listener.')

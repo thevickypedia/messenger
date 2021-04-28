@@ -1,4 +1,6 @@
-import socket
+from os import system
+from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR, gethostbyname
+from sys import exit
 from threading import Thread
 
 
@@ -11,12 +13,11 @@ class ChatServer:
         self.listener()
 
     def listener(self):
-        self.socket_fd = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_ip = '127.0.0.1'
-        server_port = 10000
-        self.socket_fd.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket_fd.bind((server_ip, server_port))
+        self.socket_fd = socket(AF_INET, SOCK_STREAM)
+        self.socket_fd.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        self.socket_fd.bind((gethostbyname('localhost'), 10000))
         print("Listener activated. Awaiting connections..")
+        Thread(target=lambda script: system(f"python3 {script}"), args=["chat_box.py"]).start()
         self.socket_fd.listen(5)
         self.threaded_message()
 
@@ -34,9 +35,13 @@ class ChatServer:
                     break
                 self.latest_msg = message_buff.decode('utf-8')
                 self.show_to_audience(so)  # send to all clients
+            except OSError as os_error:
+                if str(os_error) == '[Errno 9] Bad file descriptor':
+                    print(f"Origin: {':'.join(str(raddr) for raddr in so.getsockname())} "
+                          f"has been attempted to access from an unsupported gateway. "
+                          f"Socket: {':'.join(str(raddr) for raddr in so.getpeername())}")
             except (KeyboardInterrupt, ConnectionResetError):
-                print("Thanks for using my chat server. Bye..")
-                exit(0)
+                exit("Thanks for using my chat server. Bye..")
         so.close()
 
     def show_to_audience(self, senders_socket):
@@ -53,8 +58,7 @@ class ChatServer:
                 print(f'Connection accepted from {ip}:{port}')
                 Thread(target=self.receive_messages, args=([so])).start()
             except KeyboardInterrupt:
-                print("Thanks for using my chat server. Bye..")
-                exit(0)
+                exit("Thanks for using my chat server. Bye..")
 
 
 if __name__ == "__main__":
